@@ -21,13 +21,16 @@ def ingreso_jugadores():
     #Ingreso del jugador a la lista
     for i in range(cantidad_jugadores):
 
-        lista_jugadores.append(str(input("Ingrese el nombre del jugador:")))
+        nuevo_jugador = {"Nombre": "Jugador", "Puntaje": 0}
+        nuevo_jugador["Nombre"] = str(input("Ingrese el nombre del jugador:"))
+        lista_jugadores.append(nuevo_jugador)
 
+    #Participantes del juego
     print("Los participantes son:")
 
     for i in range(len(lista_jugadores)):
 
-        print(lista_jugadores[i])    
+        print(lista_jugadores[i]["Nombre"])    
 
 
     return lista_jugadores
@@ -38,11 +41,13 @@ def contador_puntos(jugadores,archivo_csv):
 
     preguntas = archivo_csv
 
-    lista_puntajes = []
     #Bucle por cada pregunta
 
     for n in range(len(lista_jugadores)):
-        print(f"Turno de: {lista_jugadores[n]}")
+
+        jugador = lista_jugadores[n]["Nombre"]
+        print(f"Turno de {jugador}")
+
         puntaje = 0
     
         for i in range(5):
@@ -78,32 +83,42 @@ def contador_puntos(jugadores,archivo_csv):
             if respuesta == preguntas[i]["respuesta_correcta"]:
                     puntaje += 1
 
-        lista_puntajes.append(puntaje)      
+                    
+        lista_jugadores[n]["Puntaje"] = puntaje   
+        
 
-    return lista_puntajes      
-            
-def comparar_puntaje(jugadores,puntos):
+    return lista_jugadores      
+
+def comparar_puntajes(jugadores):
 
     lista_jugadores = jugadores
-    lista_puntaje = puntos
-    lista_ganadores = []
-    mayor_puntaje = max(lista_puntaje)
+    lista_jugadores_ordenada = sorted(lista_jugadores, key = lambda i: i["Puntaje"],reverse=True)
+    cantidad_ganadores = 0
+    mayor_puntaje = lista_jugadores_ordenada[0]["Puntaje"]
 
-    #Bucle para saber quienes obtuvieron el mayor puntaje
-    for i in range(len(lista_jugadores)):
+    #Conteo de la cantidad de ganadores
+    for i in range(len(lista_jugadores_ordenada)):
 
-        if lista_puntaje[i] == mayor_puntaje:
-            lista_ganadores.append(lista_jugadores[i])
+        if lista_jugadores_ordenada[i]["Puntaje"] == mayor_puntaje:
+            cantidad_ganadores += 1
 
-    #Condicional para saber quiénes fueron los ganadores
-    if len(lista_ganadores) == 1:
-        print(f"Ha ganado {lista_ganadores[0]} con {mayor_puntaje} puntos")
-
+    #Anuncio ganador
+    if cantidad_ganadores == 1:
+        nombre_ganador = lista_jugadores_ordenada[0]["Nombre"]
+        print(f"Ha ganado {nombre_ganador} con {mayor_puntaje} puntos")
+    
     else:
-        if len(lista_ganadores) == 2:
+        if cantidad_ganadores == 2:
+            lista_ganadores = []
+            lista_ganadores.append(lista_jugadores_ordenada[0]["Nombre"])
+            lista_ganadores.append(lista_jugadores_ordenada[1]["Nombre"])
             print(f"Los ganadores han sido {lista_ganadores[0]} y {lista_ganadores[1]} con {mayor_puntaje} puntos")    
                 
-        elif len(lista_ganadores) == 3:
+        elif cantidad_ganadores == 3:
+            lista_ganadores = []
+            lista_ganadores.append(lista_jugadores_ordenada[0]["Nombre"])
+            lista_ganadores.append(lista_jugadores_ordenada[1]["Nombre"])
+            lista_ganadores.append(lista_jugadores_ordenada[2]["Nombre"])
             print(f"Los ganadores han sido {lista_ganadores[0]}, {lista_ganadores[1]} y {lista_ganadores[2]} con {mayor_puntaje} puntos")
 
         else:
@@ -121,9 +136,13 @@ if __name__ == '__main__':
     preguntas = archivo_preguntas()
 
     #Ronda de preguntas con contador puntajes
-    lista_puntajes= contador_puntos(lista_jugadores,preguntas)
+    lista_puntajes = contador_puntos(lista_jugadores,preguntas)
 
     #Comparación de puntos y resultado final
-    comparar_puntaje(lista_jugadores,lista_puntajes)
+    comparar_puntajes(lista_puntajes)
 
-    #print(lista_jugadores)
+
+
+    
+    
+    
